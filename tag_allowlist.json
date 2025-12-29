@@ -1,0 +1,4 @@
+{
+  "inline": ["a", "strong", "b", "em", "i", "code", "span", "img", "sup", "sub", "del"],
+  "block": ["p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "ul", "ol", "li", "blockquote", "pre", "code", "table", "thead", "tbody", "tr", "th", "td", "hr"]
+}

@@ -1,0 +1,25 @@
+# Build artifacts
+build/
+dist/
+*.spec
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Config (user-specific)
+settings.json
+
+# Claude
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
