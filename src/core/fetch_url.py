@@ -1,6 +1,7 @@
 """URL 抓取模块 - 支持提取网页正文"""
 import re
 import base64
+import random
 from typing import Optional, Tuple
 from urllib.parse import urljoin
 
@@ -8,6 +9,70 @@ import requests
 
 # 记录浏览器是否已经以调试模式重启过
 _browser_restarted = False
+
+# 简化版笔画数据：相对坐标点
+STROKES = {
+    "横": [(0, 0), (0.3, 0.02), (0.6, -0.01), (1, 0)],
+    "竖": [(0, 0), (0.02, 0.3), (-0.01, 0.6), (0, 1)],
+    "撇": [(0, 0), (-0.2, 0.3), (-0.4, 0.6), (-0.5, 1)],
+    "捺": [(0, 0), (0.2, 0.3), (0.4, 0.6), (0.5, 1)],
+    "点": [(0, 0), (0.1, 0.2), (0.15, 0.4)],
+}
+
+DEBUG_STROKE = False  # 设为 True 可在页面上看到笔画轨迹
+
+
+def _simulate_stroke(page):
+    """在页面上模拟一两笔鼠标移动"""
+    import time
+    stroke_name = random.choice(list(STROKES.keys()))
+    points = STROKES[stroke_name]
+
+    start_x = random.randint(200, 800)
+    start_y = random.randint(200, 500)
+    scale = random.randint(30, 80)
+
+    js_points = []
+    for px, py in points:
+        x = start_x + px * scale + random.uniform(-2, 2)
+        y = start_y + py * scale + random.uniform(-2, 2)
+        js_points.append(f"[{x:.1f}, {y:.1f}]")
+
+    debug_js = ""
+    if DEBUG_STROKE:
+        debug_js = f'''
+            const canvas = document.createElement('canvas');
+            canvas.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:99999';
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            document.body.appendChild(canvas);
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(points[0][0], points[0][1]);
+            points.forEach(p => ctx.lineTo(p[0], p[1]));
+            ctx.stroke();
+            ctx.fillStyle = 'red';
+            ctx.font = '16px sans-serif';
+            ctx.fillText('笔画: {stroke_name}', points[0][0], points[0][1] - 10);
+            setTimeout(() => canvas.remove(), 2000);
+        '''
+        print(f"[DEBUG] 模拟笔画: {stroke_name}, 起点: ({start_x}, {start_y})")
+
+    page.run_js(f'''
+        const points = [{", ".join(js_points)}];
+        {debug_js}
+        let i = 0;
+        const interval = setInterval(() => {{
+            if (i >= points.length) {{ clearInterval(interval); return; }}
+            const [x, y] = points[i++];
+            document.elementFromPoint(x, y)?.dispatchEvent(
+                new MouseEvent('mousemove', {{clientX: x, clientY: y, bubbles: true}})
+            );
+        }}, {random.randint(30, 60)});
+    ''')
+    time.sleep(0.2)
 
 
 def _extract_page_content(page, embed_images: bool, save_path: str = None, save_callback=None) -> Tuple[str, str]:
@@ -51,6 +116,12 @@ def _extract_page_content(page, embed_images: bool, save_path: str = None, save_
         page.run_js(f'window.scrollTo(0, {scroll_pos})')
         time.sleep(round(random.uniform(0.1, 0.4), 3))
 
+        # 随机画一笔（30%概率），画的时候停下来
+        if random.random() < 0.3:
+            time.sleep(0.3)
+            _simulate_stroke(page)
+            time.sleep(0.5)
+
     # 第一轮滚动后等待，让懒加载有时间触发
     time.sleep(1.0)
     save_snapshot()  # 第一轮滚动后保存
@@ -68,6 +139,13 @@ def _extract_page_content(page, embed_images: bool, save_path: str = None, save_
                 scroll_pos += 1600
                 page.run_js(f'window.scrollTo(0, {scroll_pos})')
                 time.sleep(round(random.uniform(0.1, 0.4), 3))
+
+                # 随机画一笔（30%概率）
+                if random.random() < 0.3:
+                    time.sleep(0.3)
+                    _simulate_stroke(page)
+                    time.sleep(0.5)
+
             # 在底部停顿更久，等待懒加载
             time.sleep(1.0)
             save_snapshot()  # 每轮滚动后保存

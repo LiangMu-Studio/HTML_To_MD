@@ -113,7 +113,7 @@ A: 主要支持 Windows。增强模式需要系统安装 Chrome/Edge 等 Chromiu
 
 ## 版本历史
 
-### v1.1 (2024-12-30)
+### v1.1 (2025-12-30)
 
 - 优化知乎爬虫：支持懒加载内容抓取，提取所有回答
 - 优化 CSDN 爬虫：移除"阅读更多"遮罩，完整提取文章
@@ -122,7 +122,7 @@ A: 主要支持 Windows。增强模式需要系统安装 Chrome/Edge 等 Chromiu
 - 新增 IntersectionObserver 欺骗，解决懒加载检测问题
 - 新增随机滚动延迟（0.1-0.4秒），提升反检测能力
 
-### v1.0 (2024-12-29)
+### v1.0 (2025-12-29)
 
 - 新增增强模式（浏览器抓取）
 - 新增深色主题
@@ -142,3 +142,106 @@ A: 主要支持 Windows。增强模式需要系统安装 Chrome/Edge 等 Chromiu
 - 许可证：MIT License
 - 开发者：LiangMu-Studio
 - 反馈：[Issues](https://github.com/LiangMu-Studio/HTML_To_MD/issues)
+
+---
+
+# HTML ↔ Markdown Pro v1.1
+
+Batch HTML and Markdown bidirectional converter with web scraping and PDF/DOCX export.
+
+## Features
+
+### 📄 Format Conversion
+
+- **Bidirectional** - HTML ↔ Markdown auto-detection
+- **Batch Processing** - Folder batch conversion with multi-threading
+- **Export Formats** - Optional PDF / DOCX export (preserves formatting)
+- **Auto Backup** - Auto backup to `BACKUP/<date>/` before conversion
+
+### 🌐 Web Scraping
+
+- **URL Fetch** - Fetch content directly from URLs
+- **Content Extraction** - Smart extraction, removes navigation and ads
+- **Image Embedding** - Auto download images and convert to Base64
+- **Enhanced Mode** - Browser-based scraping (for anti-crawler sites)
+
+### 🎨 UI Features
+
+- **Live Preview** - Rendered/plain text toggle
+- **MathJax Support** - Math formula rendering
+- **Bilingual** - Chinese/English interface
+- **Dark/Light Theme** - Theme switching support
+
+## Usage
+
+### Getting Started
+
+1. **Launch** - Run `python main.py` or packaged EXE
+2. **Batch Convert** - Add files or folders, click convert
+3. **Web Scraping** - Switch to "Web Scraping" tab, enter URL
+
+### Batch Conversion
+
+1. **Add Files** - Click "Add Files" or "Add Folder"
+2. **Set Output Directory** (optional) - Default: same as source
+3. **Select Export Format** (optional) - Can export PDF/DOCX simultaneously
+4. **Start Conversion** - Click convert button
+
+### Web Scraping
+
+1. **Enter URL** - Paste URL in input box
+2. **Select Options**
+   - Check "Content" to extract main content
+   - Check "Enhanced Mode" for browser-based scraping
+3. **Select Format** - MD / HTML / PDF / DOCX
+4. **Click Fetch** - Content auto-saves to output directory
+
+## Installation
+
+```bash
+pip install -r requirements.txt
+```
+
+Optional dependencies:
+- `weasyprint` - PDF export
+- `python-docx` - DOCX export
+- `readability-lxml` - Web content extraction
+- `PyQtWebEngine` - Rendered preview
+- `DrissionPage` - Enhanced mode browser scraping
+
+## Build EXE
+
+```bash
+python build.py
+```
+
+Output EXE in `dist/` folder.
+
+## Shortcuts
+
+| Shortcut | Function |
+| --- | --- |
+| `Ctrl+O` | Add files |
+| `Delete` | Remove selected |
+| `Enter` | Start conversion |
+
+## FAQ
+
+**Q: What file formats are supported?**
+A: Input: HTML, MD. Output: HTML, MD, PDF, DOCX.
+
+**Q: What is Enhanced Mode?**
+A: Enhanced mode uses a real browser to scrape pages, bypassing some anti-crawler mechanisms and getting JavaScript-rendered content.
+
+**Q: Where is the config file?**
+A: Config saved in `settings.json` in the program directory.
+
+**Q: What OS is supported?**
+A: Primarily Windows. Enhanced mode requires Chrome/Edge or other Chromium browsers.
+
+## Version
+
+- Current: 1.1
+- License: MIT License
+- Developer: LiangMu-Studio
+- Feedback: [Issues](https://github.com/LiangMu-Studio/HTML_To_MD/issues)
